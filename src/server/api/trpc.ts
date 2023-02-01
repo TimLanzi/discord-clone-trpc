@@ -58,6 +58,11 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   });
 };
 
+export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;
+export type AuthorizedTRPCContext = TRPCContext & {
+  session: Session;
+}
+
 /**
  * 2. INITIALIZATION
  *
