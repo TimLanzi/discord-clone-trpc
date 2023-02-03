@@ -38,7 +38,7 @@ export const Sidebar = () => {
         </button>
       </div>
 
-      <button type="button" onClick={() => signOut()}>
+      <button type="button" onClick={() => void signOut()}>
         <svg
           className="h-8 w-8 rotate-180 text-white md:h-10 md:w-10"
           fill="none"

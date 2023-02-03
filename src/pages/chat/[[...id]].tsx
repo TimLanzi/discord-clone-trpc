@@ -27,7 +27,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/api/auth/signin");
+      void router.push("/api/auth/signin");
     }
   }, [status]);
 

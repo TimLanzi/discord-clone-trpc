@@ -36,13 +36,13 @@ export const CreateConversationModal = () => {
       setUser(null);
       setMessage("");
       setShowConversationsList(false);
-      router.push(`/chat/${data.id}`);
+      void router.push(`/chat/${data.id}`);
     },
   });
 
   useDebounce(
     () => {
-      if (userQuery.length > 0) refetch();
+      if (userQuery.length > 0) void refetch();
     },
     500,
     [userQuery]

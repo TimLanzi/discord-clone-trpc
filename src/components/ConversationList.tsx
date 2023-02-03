@@ -41,7 +41,7 @@ export const ConversationList = () => {
   useEffect(() => {
     const channel = pusher.subscribe(MESSAGE_CHANNEL);
     channel.bind(NEW_CONVERSATION_EVENT, (_data: any) => {
-      refetch();
+      void refetch();
     });
 
     return () => {
@@ -58,7 +58,7 @@ export const ConversationList = () => {
       setConversations(conversations);
       if (conversations.length > 0 && !router.query.id) {
         setActiveConversation(conversations[0]!.id);
-        router.push(`/chat/${conversations[0]!.id}`);
+        void router.push(`/chat/${conversations[0]!.id}`);
       } else if (!!router.query.id) {
         setActiveConversation(router.query.id[0] as string);
       }

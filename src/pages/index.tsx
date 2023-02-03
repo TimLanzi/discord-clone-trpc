@@ -10,11 +10,11 @@ const Home: NextPage = () => {
   const { status } = useSession();
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/chat");
+      void router.push("/chat");
     }
 
     if (status === "unauthenticated") {
-      signIn()
+      void signIn();
     }
   }, [status]);
 

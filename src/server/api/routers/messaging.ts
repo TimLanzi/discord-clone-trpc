@@ -127,7 +127,7 @@ export const messagingRouter = createTRPCRouter({
         },
       });
 
-      pusher.trigger(MESSAGE_CHANNEL, NEW_CONVERSATION_EVENT, {
+      void pusher.trigger(MESSAGE_CHANNEL, NEW_CONVERSATION_EVENT, {
         conversationId: conversation.id,
       });
 
@@ -168,8 +168,7 @@ export const messagingRouter = createTRPCRouter({
         }
       });
 
-      console.log("hi")
-      pusher.trigger(MESSAGE_CHANNEL, NEW_MESSAGE_EVENT(input.conversationId), {
+      void pusher.trigger(MESSAGE_CHANNEL, NEW_MESSAGE_EVENT(input.conversationId), {
         conversationId: input.conversationId,
         message,
       });

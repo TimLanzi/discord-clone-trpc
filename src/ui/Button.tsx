@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
 
-type ButtonProps = {} & React.ComponentPropsWithoutRef<"button">;
+type ButtonProps = React.ComponentPropsWithoutRef<"button">;
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ children, ...props }, ref) => {
     return (
       <button
@@ -15,3 +15,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
+
+Button.displayName = "Button";
+
+export { Button };
