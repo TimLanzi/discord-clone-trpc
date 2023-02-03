@@ -67,7 +67,7 @@ export const ConversationList = () => {
 
   return (
     <div
-      className={`absolute z-10 h-full w-10/12 px-5 transition-all duration-300 md:relative ${
+      className={`absolute z-10 h-full w-10/12 px-5 transition-all duration-300 md:relative md:left-0 ${
         show ? "left-[16.666667%]" : "-left-full"
       } bg-slate-800 py-5 md:w-4/12 md:px-5 lg:w-1/4`}
     >

@@ -23,7 +23,7 @@ export const Sidebar = () => {
           alt="Profile picture"
         />
 
-        <button type="button" onClick={toggle}>
+        <button type="button" className="block md:hidden" onClick={toggle}>
           <svg
             className="h-8 w-8 text-white md:h-10 md:w-10"
             fill="none"
