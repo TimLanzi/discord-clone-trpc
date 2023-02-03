@@ -4,6 +4,10 @@ import React, { useEffect } from "react";
 import { useChatStore } from "../store/chat-store";
 import { Input } from "../ui/Input";
 import { api } from "../utils/api";
+import {
+  MESSAGE_CHANNEL,
+  NEW_CONVERSATION_EVENT,
+} from "../utils/pusher-channels-events";
 import { pusher } from "../utils/pusher-client";
 
 export const ConversationList = () => {
@@ -18,11 +22,15 @@ export const ConversationList = () => {
     setConversationsLoading,
     openModal,
     setActiveConversation,
+    show,
+    setShow,
   ] = useChatStore((s) => [
     s.setConversations,
     s.setConversationsLoading,
     () => s.setCreateConversationModal(true),
     s.setActiveConversation,
+    s.showConversationsList,
+    s.setShowConversationsList,
   ]);
 
   useEffect(() => {
@@ -31,15 +39,19 @@ export const ConversationList = () => {
   }, [status]);
 
   useEffect(() => {
-    const channel = pusher.subscribe("messaging");
-    channel.bind("new-conversation", (_data: any) => {
+    const channel = pusher.subscribe(MESSAGE_CHANNEL);
+    channel.bind(NEW_CONVERSATION_EVENT, (_data: any) => {
       refetch();
     });
 
     return () => {
-      channel.unsubscribe();
+      channel.unbind(NEW_CONVERSATION_EVENT);
     };
   }, []);
+
+  useEffect(() => {
+    setShow(false);
+  }, [router]);
 
   useEffect(() => {
     if (!!conversations) {
@@ -54,7 +66,11 @@ export const ConversationList = () => {
   }, [conversations]);
 
   return (
-    <div className="h-full w-1/4 bg-slate-800 p-5">
+    <div
+      className={`absolute z-10 h-full w-10/12 px-5 transition-all duration-300 md:relative ${
+        show ? "left-[16.666667%]" : "-left-full"
+      } bg-slate-800 py-5 md:w-4/12 md:px-5 lg:w-1/4`}
+    >
       <h1 className="mb-5 flex items-center justify-between text-2xl font-bold text-white">
         Conversations
         <button type="button" onClick={openModal}>

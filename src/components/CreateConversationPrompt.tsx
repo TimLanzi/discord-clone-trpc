@@ -8,7 +8,7 @@ export const CreateConversationPrompt = () => {
   );
 
   return (
-    <div className="flex h-full w-6/12 flex-col items-center justify-center bg-slate-700 p-5">
+    <div className="flex h-full items-center justify-center ">
       <div>
         <h1 className="mb-4 text-2xl text-white">You Have No Conversations</h1>
 

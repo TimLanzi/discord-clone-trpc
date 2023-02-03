@@ -1,6 +1,7 @@
 import { Combobox, Transition } from "@headlessui/react";
 import { User } from "@prisma/client";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 import { MutatingDots } from "react-loader-spinner";
 import { useDebounce } from "../hooks/useDebounce";
 import { useChatStore } from "../store/chat-store";
@@ -11,9 +12,11 @@ import { TextArea } from "../ui/TextArea";
 import { api } from "../utils/api";
 
 export const CreateConversationModal = () => {
-  const [show, setShow] = useChatStore((s) => [
+  const router = useRouter();
+  const [show, setShow, setShowConversationsList] = useChatStore((s) => [
     s.showCreateConversationModal,
     s.setCreateConversationModal,
+    s.setShowConversationsList,
   ]);
 
   const [userQuery, setUserQuery] = useState("");
@@ -28,10 +31,12 @@ export const CreateConversationModal = () => {
     }
   );
   const { status, mutate } = api.messaging.createConversation.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       setShow(false);
       setUser(null);
       setMessage("");
+      setShowConversationsList(false);
+      router.push(`/chat/${data.id}`);
     },
   });
 

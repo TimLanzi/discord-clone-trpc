@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import React, { useEffect, useRef, useState } from "react";
 import { MutatingDots } from "react-loader-spinner";
 import { useChatStore } from "../store/chat-store";
+import { NewMessageEvent } from "../types/pusher-events";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { api } from "../utils/api";
+import { NEW_MESSAGE_EVENT } from "../utils/pusher-channels-events";
 import { pusher } from "../utils/pusher-client";
 import { Message } from "./Message";
 
 export const MessageFeed = () => {
+  const { data: session } = useSession();
+  const feedBottom = useRef<HTMLDivElement>(null);
   const [conversationId, messageFeed, setMessageFeed, addMessageToFeed] =
     useChatStore((s) => [
       s.activeConversationId,
@@ -27,8 +32,13 @@ export const MessageFeed = () => {
   const { mutate } = api.messaging.sendMessage.useMutation({
     onSuccess: () => {
       setMessage("");
+      scrollToBottom();
     },
   });
+
+  const scrollToBottom = () => {
+    feedBottom.current?.scrollIntoView();
+  };
 
   const [message, setMessage] = useState("");
 
@@ -36,15 +46,18 @@ export const MessageFeed = () => {
     if (!conversationId) return;
 
     const channel = pusher.subscribe("messaging");
-    channel.bind(`new-message-${conversationId}`, (data: any) => {
-      console.log(data);
+    channel.bind(NEW_MESSAGE_EVENT(conversationId), (data: NewMessageEvent) => {
       addMessageToFeed(data.message);
     });
 
     return () => {
-      channel.unsubscribe();
+      channel.unbind(NEW_MESSAGE_EVENT(conversationId));
     };
   }, [conversationId]);
+
+  useEffect(() => {
+    if (messageFeed) scrollToBottom();
+  }, [messageFeed]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,8 +68,14 @@ export const MessageFeed = () => {
   };
 
   return (
-    <div className="relative flex h-full w-6/12 flex-col bg-slate-700 p-5">
-      <h1 className="mb-5 text-2xl font-bold text-white">Chat</h1>
+    <>
+      <h1 className="mb-5 text-2xl font-bold text-white">
+        {conversationId &&
+          conversation.data?.users
+            ?.filter((u) => u.id !== session?.user.id)
+            .map((u) => u.name)
+            .join(", ")}
+      </h1>
       {!!conversationId && conversation.isLoading && (
         <div className="absolute inset-0 z-10 flex w-full items-center justify-center">
           <MutatingDots
@@ -85,6 +104,7 @@ export const MessageFeed = () => {
                 sender={message.user.name!}
               />
             ))}
+            <div ref={feedBottom} className="h-0 w-full" />
           </div>
 
           <form className="flex space-x-2 pt-4" onSubmit={onSubmit}>
@@ -99,6 +119,6 @@ export const MessageFeed = () => {
           </form>
         </>
       )}
-    </div>
+    </>
   );
 };

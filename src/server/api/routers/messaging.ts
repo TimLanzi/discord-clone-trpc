@@ -2,6 +2,7 @@ import { z } from "zod";
 import { computeMostRecentMessage } from "../../../utils/compute-most-recent-message";
 import { computeUnreadMessages } from "../../../utils/compute-unread-messages";
 import { conversationExists } from "../../../utils/conversation-exists";
+import { MESSAGE_CHANNEL, NEW_CONVERSATION_EVENT, NEW_MESSAGE_EVENT } from "../../../utils/pusher-channels-events";
 import { pusher } from "../../../utils/pusher-server";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -14,6 +15,13 @@ export const messagingRouter = createTRPCRouter({
           id: input.conversationId,
         },
         include: {
+          users: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            }
+          },
           messages: {
             orderBy: {
               createdAt: "asc",
@@ -119,7 +127,7 @@ export const messagingRouter = createTRPCRouter({
         },
       });
 
-      pusher.trigger('messaging', 'new-conversation', {
+      pusher.trigger(MESSAGE_CHANNEL, NEW_CONVERSATION_EVENT, {
         conversationId: conversation.id,
       });
 
@@ -160,7 +168,8 @@ export const messagingRouter = createTRPCRouter({
         }
       });
 
-      pusher.trigger('messaging', `new-message-${input.conversationId}`, {
+      console.log("hi")
+      pusher.trigger(MESSAGE_CHANNEL, NEW_MESSAGE_EVENT(input.conversationId), {
         conversationId: input.conversationId,
         message,
       });

@@ -44,7 +44,7 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   return (
     <Transition show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog as="div" className="relative z-30" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -71,7 +71,7 @@ export const Modal: React.FC<ModalProps> = ({
               <Dialog.Panel className={modalStyles({ size })}>
                 <button
                   type="button"
-                  className="absolute top-2 right-2 z-20 text-gray-500 hover:text-gray-700"
+                  className="absolute top-2 right-2 z-40 text-gray-500 hover:text-gray-700"
                   onClick={onClose}
                 >
                   <svg
