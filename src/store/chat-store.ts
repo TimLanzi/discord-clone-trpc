@@ -2,16 +2,18 @@ import { Conversation, Message, User } from "@prisma/client";
 import { create } from "zustand";
 import { MessageWithUser } from "../types/pusher-events";
 
+type ConversationWithUsers = Conversation & { users: User[] };
+
 type ChatStore = {
   showCreateConversationModal: boolean;
   showConversationsList: boolean;
   conversationsLoading: boolean;
   activeConversationId: string | null;
-  conversations: Conversation[];
+  conversations: ConversationWithUsers[];
   messageFeed: MessageWithUser[],
   setActiveConversation: (id: string|null) => void;
   setShowConversationsList: (show: boolean) => void;
-  setConversations: (conversations: Conversation[]) => void;
+  setConversations: (conversations: ConversationWithUsers[]) => void;
   setConversationsLoading: (loading: boolean) => void;
   setCreateConversationModal: (show: boolean) => void;
   setMessageFeed: (messages: MessageWithUser[]) => void;

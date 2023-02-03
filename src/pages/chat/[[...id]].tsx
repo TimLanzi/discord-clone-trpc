@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { ConversationList } from "../../components/ConversationList";
 import { CreateConversationModal } from "../../components/CreateConversationModal";
 import { CreateConversationPrompt } from "../../components/CreateConversationPrompt";
@@ -10,14 +11,19 @@ import { useChatStore } from "../../store/chat-store";
 
 const ChatPage = () => {
   const router = useRouter();
-  const { status } = useSession();
-  const { conversations, conversationsLoading, setActive } = useChatStore(
-    (s) => ({
+  const { status, data: session } = useSession();
+  const { conversations, conversationsLoading, active, setActive } =
+    useChatStore((s) => ({
       conversations: s.conversations,
       conversationsLoading: s.conversationsLoading,
+      active: s.activeConversationId,
       setActive: s.setActiveConversation,
-    })
-  );
+    }));
+
+  const conversation = useMemo(() => {
+    if (!active) return null;
+    return conversations.find((c) => c.id === active);
+  }, [active]);
 
   useEffect(() => {
     if (router.query.id) {
@@ -33,6 +39,17 @@ const ChatPage = () => {
 
   return (
     <div className="relative flex h-screen bg-gray-100">
+      <Head>
+        <title>
+          {active
+            ? `Conversation with ${conversation?.users
+                ?.filter((u) => u.id !== session?.user.id)
+                .map((u) => u.name)
+                .join(", ")}`
+            : "Conversation"}
+        </title>
+      </Head>
+
       <CreateConversationModal />
 
       <Sidebar />
