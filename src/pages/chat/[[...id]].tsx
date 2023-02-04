@@ -42,10 +42,12 @@ const ChatPage = () => {
       <Head>
         <title>
           {active
-            ? `Conversation with ${conversation?.users
-                ?.filter((u) => u.id !== session?.user.id)
-                .map((u) => u.name)
-                .join(", ")}`
+            ? `Conversation with ${
+                conversation?.users
+                  ?.filter((u) => u.id !== session?.user.id)
+                  .map((u) => u.name)
+                  .join(", ") || ""
+              }`
             : "Conversation"}
         </title>
       </Head>
