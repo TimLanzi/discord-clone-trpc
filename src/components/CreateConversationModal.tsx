@@ -1,7 +1,7 @@
-import { Combobox, Transition } from "@headlessui/react";
-import { User } from "@prisma/client";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useRouter } from "next/router";
+import { Combobox, Transition } from "@headlessui/react";
+import type { User } from "@prisma/client";
 import { MutatingDots } from "react-loader-spinner";
 import { useDebounce } from "../hooks/useDebounce";
 import { useChatStore } from "../store/chat-store";
@@ -13,11 +13,11 @@ import { api } from "../utils/api";
 
 export const CreateConversationModal = () => {
   const router = useRouter();
-  const [show, setShow, setShowConversationsList] = useChatStore((s) => [
-    s.showCreateConversationModal,
-    s.setCreateConversationModal,
-    s.setShowConversationsList,
-  ]);
+  const { show, setShow, setShowConversationsList } = useChatStore((s) => ({
+    show: s.showCreateConversationModal,
+    setShow: s.setCreateConversationModal,
+    setShowConversationsList: s.setShowConversationsList,
+  }));
 
   const [userQuery, setUserQuery] = useState("");
   const [user, setUser] = useState<User | null>(null);

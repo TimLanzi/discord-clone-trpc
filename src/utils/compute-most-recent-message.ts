@@ -1,4 +1,4 @@
-import { Message } from "@prisma/client";
+import type { Message } from "@prisma/client";
 
 type WithMostRecentMessage<T extends { messages: Message[] }> = T & {
   mostRecentMessage: Message;

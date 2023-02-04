@@ -1,4 +1,4 @@
-import { AuthorizedTRPCContext } from "../server/api/trpc";
+import type { AuthorizedTRPCContext } from "../server/api/trpc";
 
 export async function conversationExists(ctx: AuthorizedTRPCContext, userIds: string[]) {
   const ids = [ctx.session.user.id, ...userIds]

@@ -1,69 +1,15 @@
+import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
 import { useChatStore } from "../store/chat-store";
 import { Input } from "../ui/Input";
 import { api } from "../utils/api";
-import {
-  MESSAGE_CHANNEL,
-  NEW_CONVERSATION_EVENT,
-} from "../utils/pusher-channels-events";
-import { pusher } from "../utils/pusher-client";
 
 export const ConversationList = () => {
-  const router = useRouter();
-  const {
-    data: conversations,
-    status,
-    refetch,
-  } = api.messaging.getConversations.useQuery();
-  const [
-    setConversations,
-    setConversationsLoading,
-    openModal,
-    setActiveConversation,
-    show,
-    setShow,
-  ] = useChatStore((s) => [
-    s.setConversations,
-    s.setConversationsLoading,
-    () => s.setCreateConversationModal(true),
-    s.setActiveConversation,
-    s.showConversationsList,
-    s.setShowConversationsList,
-  ]);
-
-  useEffect(() => {
-    if (status !== "loading") setConversationsLoading(false);
-    else setConversationsLoading(true);
-  }, [status]);
-
-  useEffect(() => {
-    const channel = pusher.subscribe(MESSAGE_CHANNEL);
-    channel.bind(NEW_CONVERSATION_EVENT, (_data: any) => {
-      void refetch();
-    });
-
-    return () => {
-      channel.unbind(NEW_CONVERSATION_EVENT);
-    };
-  }, []);
-
-  useEffect(() => {
-    setShow(false);
-  }, [router]);
-
-  useEffect(() => {
-    if (!!conversations) {
-      setConversations(conversations);
-      if (conversations.length > 0 && !router.query.id) {
-        setActiveConversation(conversations[0]!.id);
-        void router.push(`/chat/${conversations[0]!.id}`);
-      } else if (!!router.query.id) {
-        setActiveConversation(router.query.id[0] as string);
-      }
-    }
-  }, [conversations]);
+  const { data: conversations } = api.messaging.getConversations.useQuery();
+  const { openModal, show } = useChatStore((s) => ({
+    openModal: () => s.setCreateConversationModal(true),
+    show: s.showConversationsList,
+  }));
 
   return (
     <div

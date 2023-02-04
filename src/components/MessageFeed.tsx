@@ -2,31 +2,24 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useRef, useState } from "react";
 import { MutatingDots } from "react-loader-spinner";
 import { useChatStore } from "../store/chat-store";
-import { NewMessageEvent } from "../types/pusher-events";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { api } from "../utils/api";
-import { NEW_MESSAGE_EVENT } from "../utils/pusher-channels-events";
-import { pusher } from "../utils/pusher-client";
 import { Message } from "./Message";
 
 export const MessageFeed = () => {
   const { data: session } = useSession();
   const feedBottom = useRef<HTMLDivElement>(null);
-  const [conversationId, messageFeed, setMessageFeed, addMessageToFeed] =
-    useChatStore((s) => [
-      s.activeConversationId,
-      s.messageFeed,
-      s.setMessageFeed,
-      s.addMessageToFeed,
-    ]);
-  const conversation = api.messaging.getConversation.useQuery(
-    { conversationId: conversationId! },
-    {
-      enabled: !!conversationId,
-      refetchOnWindowFocus: false,
-      onSuccess: (data) => setMessageFeed(data.messages),
-    }
+
+  const [message, setMessage] = useState("");
+
+  const { loading, conversationId, messageFeed, metadata } = useChatStore(
+    (s) => ({
+      conversationId: s.activeConversationId,
+      loading: s.activeConversationLoading,
+      messageFeed: s.messageFeed,
+      metadata: s.activeConversationMeta,
+    })
   );
 
   const { mutate } = api.messaging.sendMessage.useMutation({
@@ -39,21 +32,6 @@ export const MessageFeed = () => {
   const scrollToBottom = () => {
     feedBottom.current?.scrollIntoView();
   };
-
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if (!conversationId) return;
-
-    const channel = pusher.subscribe("messaging");
-    channel.bind(NEW_MESSAGE_EVENT(conversationId), (data: NewMessageEvent) => {
-      addMessageToFeed(data.message);
-    });
-
-    return () => {
-      channel.unbind(NEW_MESSAGE_EVENT(conversationId));
-    };
-  }, [conversationId]);
 
   useEffect(() => {
     if (messageFeed) scrollToBottom();
@@ -70,13 +48,13 @@ export const MessageFeed = () => {
   return (
     <>
       <h1 className="mb-5 text-2xl font-bold text-white">
-        {conversationId &&
-          conversation.data?.users
+        {metadata &&
+          metadata.users
             ?.filter((u) => u.id !== session?.user.id)
             .map((u) => u.name)
             .join(", ")}
       </h1>
-      {!!conversationId && conversation.isLoading && (
+      {!!conversationId && loading && (
         <div className="absolute inset-0 z-10 flex w-full items-center justify-center">
           <MutatingDots
             height="100"

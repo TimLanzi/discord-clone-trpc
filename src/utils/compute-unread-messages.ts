@@ -1,4 +1,4 @@
-import { Message, User } from "@prisma/client";
+import type { Message, User } from "@prisma/client";
 
 type MessageWithReadBy = Message & { readBy: User[] };
 

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { Fragment, PropsWithChildren } from "react";
+import React, { Fragment, type PropsWithChildren } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { cva, VariantProps } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 
 const modalStyles = cva(
   "relative w-full transform overflow-hidden rounded-lg bg-slate-700 text-white p-6 text-left align-middle shadow-xl transition-all",
